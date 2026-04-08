@@ -1,16 +1,23 @@
 package threadrelay;
 
 public class Runner implements Runnable{
+    private int quota;
+    private static boolean hasTestimone;
+    
     public Runner() {
         //risorsa condivisa
-        boolean hasTestimone = false;
+        hasTestimone = true;
         //quota che deve raggiungere 90
-        int quota = 0;
+        quota = 0;
     }
-
-    public void run(){
-        while (quota < 90) {
-
+    
+    synchronized public void run(){
+        if (hasTestimone == true) {
+            while (quota < 90) {
+                quota += 1;
+                System.out.println(quota);
+            }
+            notify();
         }
     }
 }
