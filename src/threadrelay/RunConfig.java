@@ -13,4 +13,5 @@ public class RunConfig{
         this.msCost = msCost;
         this.msDec = msDec;
     }
+    //non c'è bisogno dei getter perché i valori sono immutabili
 }

@@ -3,9 +3,11 @@ package threadrelay;
 public class Runner implements Runnable{
     
     //listener per le progress bar
+    //(serve perché un thread non dovrebbe aggiornare direttamente la Swing)
+    //(Runner notifica solo i cambiamenti a Frame tramite il listener)
     public interface QuotaListener {
-        void onQuotaChanged(int runnerId, int quota);
-        void onFinished(int runnerId);
+        void onQuotaChanged(int runnerId, int quota); //ogni volta che cambia quota
+        void onFinished(int runnerId); //chiamato a fine corsa del runner
     }
     
     private int quota;
@@ -13,9 +15,10 @@ public class Runner implements Runnable{
     
     private QuotaListener listener;
     
-    private final int msAcc;
-    private final int msCost;
-    private final int msDec;
+    //variabili che vengono da RunConfig, e che modifico in Settings
+    private final int msAcc; //millisecondi accelerazione
+    private final int msCost; //millisecondi velocità costante
+    private final int msDec; //millisecondi decelerazione
     
     public Runner(int id, QuotaListener listener, int msAcc, int msCost, int msDec) {
         this.id = id;
@@ -26,21 +29,23 @@ public class Runner implements Runnable{
         this.msDec = msDec;
     }
     
+    //variabili static perché devono essere condivise tra tutti i Runner
     private static int turno = 0; //0 per runner0, 1 per runner1 ecc.
     private static final Object staffetta = new Object(); //risorsa condivisa
     
-    synchronized public void run(){
-        synchronized (staffetta) {
-            //non è il mio turno, aspetto
-            while (turno != id) {
+    @Override
+    public void run(){
+        synchronized (staffetta) { //ogni Runner entra in questo blocco
+            //se NON è il suo turno, aspetta
+            while (turno != id) { //solo il Runner con l'id giusto prosegue
                 try { staffetta.wait(); }
                 catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
-                    return; //esco dal thread
+                    return; //esce dal thread
                 }
             }
             
-            //è il mio turno --> corro fino a 90
+            //se È il suo turno --> corre fino a 90
             System.out.println("[Runner " + id + "] in esecuzione.");
             
             //quota accelerazione (fino a 20)
@@ -57,6 +62,8 @@ public class Runner implements Runnable{
             staffetta.notifyAll(); //sveglio gli altri thread
         }
         
+        //se listener è diverso da null, quindi esiste
+        //attivo il metodo .onFinished(id), id del Runner che ha finito
         if (listener != null) listener.onFinished(id);
     }
     

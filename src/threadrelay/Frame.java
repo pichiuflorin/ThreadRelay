@@ -11,10 +11,34 @@ public class Frame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null); //centra il form in mezzo allo schermo
         
+        //definisco il massimo e il minimo delle progress bar (relativo alla quota)
         pb0.setMinimum(0); pb0.setMaximum(90);
         pb1.setMinimum(0); pb1.setMaximum(90);
         pb2.setMinimum(0); pb2.setMaximum(90);
         pb3.setMinimum(0); pb3.setMaximum(90);
+        
+        //progress bar da destra verso sinistra
+        pb0.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
+        pb1.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
+        pb2.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
+        pb3.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
+    }
+    
+    private void muoviCorridore(javax.swing.JProgressBar pb, javax.swing.JLabel corridore, int value) {
+        int min = pb.getMinimum();
+        int max = pb.getMaximum();
+        float p = (value - min) / (float) (max - min); // 0..1
+
+        //a value = 0 sta a destra, a value = max sta a sinistra
+        float inv = 1.0f - p;
+
+        int pbX = pb.getX();
+        int pbW = pb.getWidth();
+
+        int x = pbX + Math.round(inv * pbW) - (corridore.getWidth() / 2) - 5;
+        int y = pb.getY() + 10;
+
+        corridore.setLocation(x, y);
     }
 
     @SuppressWarnings("unchecked")
@@ -22,6 +46,10 @@ public class Frame extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
+        lblCorridore2 = new javax.swing.JLabel();
+        lblCorridore3 = new javax.swing.JLabel();
+        lblCorridore0 = new javax.swing.JLabel();
+        lblCorridore1 = new javax.swing.JLabel();
         lblRunner0 = new javax.swing.JLabel();
         lblRunner1 = new javax.swing.JLabel();
         lblRunner2 = new javax.swing.JLabel();
@@ -37,26 +65,60 @@ public class Frame extends javax.swing.JFrame {
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setPreferredSize(new java.awt.Dimension(456, 316));
+        jPanel1.setLayout(null);
+
+        lblCorridore2.setText("🏃");
+        jPanel1.add(lblCorridore2);
+        lblCorridore2.setBounds(410, 160, 20, 16);
+
+        lblCorridore3.setText("🏃");
+        jPanel1.add(lblCorridore3);
+        lblCorridore3.setBounds(410, 220, 20, 16);
+
+        lblCorridore0.setText("🏃");
+        jPanel1.add(lblCorridore0);
+        lblCorridore0.setBounds(410, 40, 20, 16);
+
+        lblCorridore1.setText("🏃");
+        jPanel1.add(lblCorridore1);
+        lblCorridore1.setBounds(410, 100, 20, 16);
 
         lblRunner0.setText("Runner 0");
+        jPanel1.add(lblRunner0);
+        lblRunner0.setBounds(30, 40, 60, 16);
 
         lblRunner1.setText("Runner 1");
+        jPanel1.add(lblRunner1);
+        lblRunner1.setBounds(30, 100, 60, 16);
 
         lblRunner2.setText("Runner 2");
+        jPanel1.add(lblRunner2);
+        lblRunner2.setBounds(30, 160, 60, 16);
 
         lblRunner3.setText("Runner 3");
+        jPanel1.add(lblRunner3);
+        lblRunner3.setBounds(30, 220, 60, 16);
 
         pb1.setBackground(new java.awt.Color(204, 204, 255));
         pb1.setForeground(new java.awt.Color(102, 102, 255));
+        jPanel1.add(pb1);
+        pb1.setBounds(110, 90, 320, 39);
 
         pb2.setBackground(new java.awt.Color(255, 204, 255));
         pb2.setForeground(new java.awt.Color(255, 51, 255));
+        jPanel1.add(pb2);
+        pb2.setBounds(110, 150, 320, 39);
 
         pb3.setBackground(new java.awt.Color(255, 204, 204));
         pb3.setForeground(new java.awt.Color(255, 102, 102));
+        jPanel1.add(pb3);
+        pb3.setBounds(110, 210, 320, 39);
 
         pb0.setBackground(new java.awt.Color(204, 255, 255));
         pb0.setForeground(new java.awt.Color(0, 204, 204));
+        jPanel1.add(pb0);
+        pb0.setBounds(110, 30, 320, 39);
 
         btnAvvia.setText("Avvia");
         btnAvvia.addActionListener(new java.awt.event.ActionListener() {
@@ -64,6 +126,8 @@ public class Frame extends javax.swing.JFrame {
                 btnAvviaActionPerformed(evt);
             }
         });
+        jPanel1.add(btnAvvia);
+        btnAvvia.setBounds(350, 270, 76, 30);
 
         btnOpenSettings.setFont(new java.awt.Font("Segoe UI Emoji", 0, 14)); // NOI18N
         btnOpenSettings.setText("⚙");
@@ -72,104 +136,57 @@ public class Frame extends javax.swing.JFrame {
                 btnOpenSettingsActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnOpenSettings, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAvvia))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblRunner3)
-                            .addComponent(lblRunner2)
-                            .addComponent(lblRunner1)
-                            .addComponent(lblRunner0))
-                        .addGap(30, 30, 30)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(pb1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pb2, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pb3, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pb0, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(29, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pb0, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(lblRunner0)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pb1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(9, 9, 9)
-                        .addComponent(lblRunner1)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pb2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(lblRunner2)))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pb3, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(9, 9, 9)
-                        .addComponent(lblRunner3)))
-                .addGap(24, 24, 24)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAvvia)
-                    .addComponent(btnOpenSettings))
-                .addGap(15, 15, 15))
-        );
+        jPanel1.add(btnOpenSettings);
+        btnOpenSettings.setBounds(280, 270, 57, 30);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAvviaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAvviaActionPerformed
+        //disabilita bottoni durante la gara
         btnOpenSettings.setEnabled(false);
+        btnAvvia.setEnabled(false);
+        
+        //reset gara
         Runner.resetGara();
         
         //reset barre
-        pb0.setValue(0);
-        pb1.setValue(0);
-        pb2.setValue(0);
-        pb3.setValue(0);
-
-        btnAvvia.setEnabled(false);
-
+        pb0.setValue(0); pb1.setValue(0);
+        pb2.setValue(0); pb3.setValue(0);
+        
+        //creazione listener per quota
         Runner.QuotaListener listener = new Runner.QuotaListener() {
             @Override
             public void onQuotaChanged(int runnerId, int quota) {
+                
+                //Swing NON è thread-safe, non si può chiamare pb0.setValue(...) da essi,
+                //SwingUtilies.invokeLater(...) permette di eseguire la determinata
+                //modifica della GUI sul thread di Swing (EDT) appena è possibile
+                
                 javax.swing.SwingUtilities.invokeLater(() -> {
                     if (runnerId == 0) {
                         pb0.setValue(quota);
+                        muoviCorridore(pb0, lblCorridore0, quota);
                     } else if (runnerId == 1) {
                         pb1.setValue(quota);
+                        muoviCorridore(pb1, lblCorridore1, quota);
                     } else if (runnerId == 2) {
                         pb2.setValue(quota);
+                        muoviCorridore(pb2, lblCorridore2, quota);
                     } else {
                         pb3.setValue(quota);
+                        muoviCorridore(pb3, lblCorridore3, quota);
                     }
                 });
             }
@@ -245,6 +262,10 @@ public class Frame extends javax.swing.JFrame {
     private javax.swing.JButton btnAvvia;
     private javax.swing.JButton btnOpenSettings;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblCorridore0;
+    private javax.swing.JLabel lblCorridore1;
+    private javax.swing.JLabel lblCorridore2;
+    private javax.swing.JLabel lblCorridore3;
     private javax.swing.JLabel lblRunner0;
     private javax.swing.JLabel lblRunner1;
     private javax.swing.JLabel lblRunner2;
