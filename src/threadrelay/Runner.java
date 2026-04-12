@@ -1,11 +1,8 @@
 package threadrelay;
 
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-
 public class Runner implements Runnable{
     
-    //listener per le progressbar
+    //listener per le progress bar
     public interface QuotaListener {
         void onQuotaChanged(int runnerId, int quota);
         void onFinished(int runnerId);
@@ -16,13 +13,20 @@ public class Runner implements Runnable{
     
     private QuotaListener listener;
     
-    public Runner(int id, QuotaListener listener) {
+    private final int msAcc;
+    private final int msCost;
+    private final int msDec;
+    
+    public Runner(int id, QuotaListener listener, int msAcc, int msCost, int msDec) {
         this.id = id;
         this.listener = listener;
         this.quota = 0;
+        this.msAcc = msAcc;
+        this.msCost = msCost;
+        this.msDec = msDec;
     }
     
-    private static int turno = 0; // 0 per runner0, 1 per runner1 ecc.
+    private static int turno = 0; //0 per runner0, 1 per runner1 ecc.
     private static final Object staffetta = new Object(); //risorsa condivisa
     
     synchronized public void run(){
@@ -40,13 +44,13 @@ public class Runner implements Runnable{
             System.out.println("[Runner " + id + "] in esecuzione.");
             
             //quota accelerazione (fino a 20)
-            quotaScalare(0, 20, 20, true);
+            quotaScalare(0, 20, msAcc, true);
             
             //quota costante (fino a 70)
-            quotaLineare(20, 70, 20);
+            quotaLineare(21, 70, msCost);
             
             //quota decelerazione (fino a 90)
-            quotaScalare(70, 90, 20, false);
+            quotaScalare(71, 90, msDec, false);
             
             System.out.println(""); //spazio dopo la filata di numeri
             turno++; //passo il turno
@@ -92,7 +96,8 @@ public class Runner implements Runnable{
             
             //range di ms (più ms --> più lento)
             int msMin = msVelocitaMassima;
-            int msMax = msVelocitaMassima + 30;
+            int incremento = maxQuota - minQuota;
+            int msMax = msVelocitaMassima + incremento;
             
             int v; //ms di sleep per questa quota
             
@@ -116,5 +121,9 @@ public class Runner implements Runnable{
                 return; //esco dal thread
             }
         }
+    }
+    
+    public static void resetGara(){
+        turno = 0;
     }
 }
