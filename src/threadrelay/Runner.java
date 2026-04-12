@@ -1,136 +1,103 @@
 package threadrelay;
 
-public class Runner implements Runnable{
-    
-    //listener per le progress bar
-    //(serve perché un thread non dovrebbe aggiornare direttamente la Swing)
-    //(Runner notifica solo i cambiamenti a Frame tramite il listener)
+public class Runner implements Runnable {
+
     public interface QuotaListener {
-        void onQuotaChanged(int runnerId, int quota); //ogni volta che cambia quota
-        void onFinished(int runnerId); //chiamato a fine corsa del runner
+        void onQuotaChanged(int runnerId, int quota);
+        void onFinished(int runnerId);
     }
-    
-    private int quota;
-    private int id; //quale runner è? runner0, runner1 ecc.
-    
-    private QuotaListener listener;
-    
-    //variabili che vengono da RunConfig, e che modifico in Settings
-    private final int msAcc; //millisecondi accelerazione
-    private final int msCost; //millisecondi velocità costante
-    private final int msDec; //millisecondi decelerazione
-    
-    public Runner(int id, QuotaListener listener, int msAcc, int msCost, int msDec) {
+
+    private static int turno = 0;
+    private static final Object staffetta = new Object();
+    private static final int QUOTA_PASSAGGIO = 90;
+
+    private static final Object lockPausa = new Object();
+    private static boolean inPausa = false;
+    private static boolean fermato = false;
+
+    private final int id;
+    private final QuotaListener listener;
+    private final int msVelocita;
+
+    private boolean staffettaPassata = false;
+
+    public Runner(int id, QuotaListener listener, int msVelocita) {
         this.id = id;
         this.listener = listener;
-        this.quota = 0;
-        this.msAcc = msAcc;
-        this.msCost = msCost;
-        this.msDec = msDec;
+        this.msVelocita = msVelocita;
     }
-    
-    //variabili static perché devono essere condivise tra tutti i Runner
-    private static int turno = 0; //0 per runner0, 1 per runner1 ecc.
-    private static final Object staffetta = new Object(); //risorsa condivisa
-    
+
     @Override
-    public void run(){
-        synchronized (staffetta) { //ogni Runner entra in questo blocco
-            //se NON è il suo turno, aspetta
-            while (turno != id) { //solo il Runner con l'id giusto prosegue
-                try { staffetta.wait(); }
-                catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return; //esce dal thread
+    public void run() {
+        try {
+            synchronized (staffetta) {
+                while (turno != id && !fermato) {
+                    staffetta.wait();
                 }
             }
-            
-            //se È il suo turno --> corre fino a 90
-            System.out.println("[Runner " + id + "] in esecuzione.");
-            
-            //quota accelerazione (fino a 20)
-            quotaScalare(0, 20, msAcc, true);
-            
-            //quota costante (fino a 70)
-            quotaLineare(21, 70, msCost);
-            
-            //quota decelerazione (fino a 90)
-            quotaScalare(71, 90, msDec, false);
-            
-            System.out.println(""); //spazio dopo la filata di numeri
-            turno++; //passo il turno
-            staffetta.notifyAll(); //sveglio gli altri thread
-        }
-        
-        //se listener è diverso da null, quindi esiste
-        //attivo il metodo .onFinished(id), id del Runner che ha finito
-        if (listener != null) listener.onFinished(id);
-    }
-    
-    /**
-     * Quota che aumenta con velocità costante
-     * @param minQuota quota da cui parte la conta
-     * @param maxQuota quota che deve essere raggiunta
-     * @param msVelocita velocità costante
-     */
-    private void quotaLineare(int minQuota, int maxQuota, int msVelocita){
-        for (quota = minQuota; quota < (maxQuota + 1); quota++) {
-                System.out.print(quota + " ");
-                
+
+            for (int quota = 0; quota <= 99; quota++) {
+
+                synchronized (lockPausa) {
+                    while (inPausa && !fermato) {
+                        lockPausa.wait();
+                    }
+                    if (fermato) return;
+                }
+
                 if (listener != null) listener.onQuotaChanged(id, quota);
-                
-                try {
-                    Thread.sleep(msVelocita);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return; //esco dal thread
+
+                if (!staffettaPassata && quota >= QUOTA_PASSAGGIO) {
+                    staffettaPassata = true;
+                    synchronized (staffetta) {
+                        turno++;
+                        staffetta.notifyAll();
+                    }
                 }
+
+                if (quota < 99) Thread.sleep(msVelocita);
             }
-    }
-    
-    /**
-     * Quota che aumenta in maniera scalare
-     * @param minQuota quota da cui parte la conta
-     * @param maxQuota quota che deve essere raggiunta
-     * @param msVelocitaMassima velocità che deve essere raggiunta
-     * @param accelerazione booleano per accelerare o decelerare
-     */
-    private void quotaScalare(int minQuota, int maxQuota, int msVelocitaMassima, boolean accelerazione){
-        for (quota = minQuota; quota <= maxQuota; quota++){
-            System.out.print(quota + " ");
-            
-            if (listener != null) listener.onQuotaChanged(id, quota);
-            
-            //range di ms (più ms --> più lento)
-            int msMin = msVelocitaMassima;
-            int incremento = maxQuota - minQuota;
-            int msMax = msVelocitaMassima + incremento;
-            
-            int v; //ms di sleep per questa quota
-            
-            if (accelerazione){ //true per default
-                //ACCELERAZIONE (msMax --> msMin)
-                v = msMax - (quota - minQuota);
-                //non deve scendere sotto msMin
-                if (v < msMin) v = msMin;
-            } else {
-                //DECELERAZIONE (msMin --> msMax)
-                v = msMin + (quota - minQuota);
-                
-                //non deve salire sopra msMax
-                if (v > msMax) v = msMax;
-            }
-            
-            try {
-                Thread.sleep(v);
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
-                return; //esco dal thread
-            }
+
+            if (listener != null) listener.onFinished(id);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
-    
-    public static void resetGara(){
-        turno = 0;
+
+    public static void resetGara() {
+        synchronized (staffetta) {
+            turno = 0;
+            staffetta.notifyAll();
+        }
+        synchronized (lockPausa) {
+            inPausa = false;
+            fermato = false;
+            lockPausa.notifyAll();
+        }
+    }
+
+    public static void pausa() {
+        synchronized (lockPausa) {
+            inPausa = true;
+        }
+    }
+
+    public static void riprendi() {
+        synchronized (lockPausa) {
+            inPausa = false;
+            lockPausa.notifyAll();
+        }
+    }
+
+    public static void ferma() {
+        synchronized (lockPausa) {
+            fermato = true;
+            inPausa = false;
+            lockPausa.notifyAll();
+        }
+        synchronized (staffetta) {
+            staffetta.notifyAll();
+        }
     }
 }

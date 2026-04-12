@@ -4,32 +4,41 @@ public class Frame extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Frame.class.getName());
     
-    private Thread thread0, thread1, thread2, thread3; //thread usati appena il programma si avvia
-    private RunConfig config = new RunConfig(20, 20, 20); //default config
+    private Thread thread0, thread1, thread2, thread3;
 
     public Frame() {
         initComponents();
-        setLocationRelativeTo(null); //centra il form in mezzo allo schermo
+        setLocationRelativeTo(null);
         
-        //definisco il massimo e il minimo delle progress bar (relativo alla quota)
-        pb0.setMinimum(0); pb0.setMaximum(90);
-        pb1.setMinimum(0); pb1.setMaximum(90);
-        pb2.setMinimum(0); pb2.setMaximum(90);
-        pb3.setMinimum(0); pb3.setMaximum(90);
+        //definisco il massimo e il minimo delle progress bar
+        pb0.setMinimum(0); pb0.setMaximum(99);
+        pb1.setMinimum(0); pb1.setMaximum(99);
+        pb2.setMinimum(0); pb2.setMaximum(99);
+        pb3.setMinimum(0); pb3.setMaximum(99);
         
         //progress bar da destra verso sinistra
         pb0.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
         pb1.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
         pb2.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
         pb3.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
+        
+        lblCorridore0.setSize(lblCorridore0.getPreferredSize());
+        lblCorridore1.setSize(lblCorridore1.getPreferredSize());
+        lblCorridore2.setSize(lblCorridore2.getPreferredSize());
+        lblCorridore3.setSize(lblCorridore3.getPreferredSize());
+    }
+
+    private int getMsFromCombo() {
+        String v = (String) cmbVelocita.getSelectedItem();
+        if ("Slow".equals(v)) return 40;
+        if ("Fast".equals(v)) return 10;
+        return 20;
     }
     
     private void muoviCorridore(javax.swing.JProgressBar pb, javax.swing.JLabel corridore, int value) {
         int min = pb.getMinimum();
         int max = pb.getMaximum();
-        float p = (value - min) / (float) (max - min); // 0..1
-
-        //a value = 0 sta a destra, a value = max sta a sinistra
+        float p = (value - min) / (float) (max - min);
         float inv = 1.0f - p;
 
         int pbX = pb.getX();
@@ -40,6 +49,7 @@ public class Frame extends javax.swing.JFrame {
 
         corridore.setLocation(x, y);
     }
+
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -59,7 +69,10 @@ public class Frame extends javax.swing.JFrame {
         pb3 = new javax.swing.JProgressBar();
         pb0 = new javax.swing.JProgressBar();
         btnAvvia = new javax.swing.JButton();
-        btnOpenSettings = new javax.swing.JButton();
+        btnRiprendi = new javax.swing.JButton();
+        btnPausa = new javax.swing.JButton();
+        btnFerma = new javax.swing.JButton();
+        cmbVelocita = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -70,19 +83,19 @@ public class Frame extends javax.swing.JFrame {
 
         lblCorridore2.setText("🏃");
         jPanel1.add(lblCorridore2);
-        lblCorridore2.setBounds(410, 160, 20, 16);
+        lblCorridore2.setBounds(420, 160, 20, 16);
 
         lblCorridore3.setText("🏃");
         jPanel1.add(lblCorridore3);
-        lblCorridore3.setBounds(410, 220, 20, 16);
+        lblCorridore3.setBounds(420, 220, 20, 16);
 
         lblCorridore0.setText("🏃");
         jPanel1.add(lblCorridore0);
-        lblCorridore0.setBounds(410, 40, 20, 16);
+        lblCorridore0.setBounds(420, 40, 20, 16);
 
         lblCorridore1.setText("🏃");
         jPanel1.add(lblCorridore1);
-        lblCorridore1.setBounds(410, 100, 20, 16);
+        lblCorridore1.setBounds(420, 100, 20, 16);
 
         lblRunner0.setText("Runner 0");
         jPanel1.add(lblRunner0);
@@ -129,15 +142,36 @@ public class Frame extends javax.swing.JFrame {
         jPanel1.add(btnAvvia);
         btnAvvia.setBounds(350, 270, 76, 30);
 
-        btnOpenSettings.setFont(new java.awt.Font("Segoe UI Emoji", 0, 14)); // NOI18N
-        btnOpenSettings.setText("⚙");
-        btnOpenSettings.addActionListener(new java.awt.event.ActionListener() {
+        btnRiprendi.setText("Riprendi");
+        btnRiprendi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOpenSettingsActionPerformed(evt);
+                btnRiprendiActionPerformed(evt);
             }
         });
-        jPanel1.add(btnOpenSettings);
-        btnOpenSettings.setBounds(280, 270, 57, 30);
+        jPanel1.add(btnRiprendi);
+        btnRiprendi.setBounds(260, 270, 90, 30);
+
+        btnPausa.setText("Pausa");
+        btnPausa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPausaActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnPausa);
+        btnPausa.setBounds(190, 270, 70, 30);
+
+        btnFerma.setText("Ferma");
+        btnFerma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFermaActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnFerma);
+        btnFerma.setBounds(119, 270, 70, 30);
+
+        cmbVelocita.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Slow", "Regular", "Fast" }));
+        jPanel1.add(cmbVelocita);
+        cmbVelocita.setBounds(20, 270, 90, 30);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -147,33 +181,34 @@ public class Frame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAvviaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAvviaActionPerformed
-        //disabilita bottoni durante la gara
-        btnOpenSettings.setEnabled(false);
+        btnPausa.setEnabled(true);
+        btnFerma.setEnabled(true);
+        btnRiprendi.setEnabled(false);
+        cmbVelocita.setEnabled(false);
         btnAvvia.setEnabled(false);
-        
-        //reset gara
+
         Runner.resetGara();
-        
-        //reset barre
+
         pb0.setValue(0); pb1.setValue(0);
         pb2.setValue(0); pb3.setValue(0);
-        
-        //creazione listener per quota
+
+        muoviCorridore(pb0, lblCorridore0, 0);
+        muoviCorridore(pb1, lblCorridore1, 0);
+        muoviCorridore(pb2, lblCorridore2, 0);
+        muoviCorridore(pb3, lblCorridore3, 0);
+
+        int msVelocita = getMsFromCombo();
+
         Runner.QuotaListener listener = new Runner.QuotaListener() {
             @Override
             public void onQuotaChanged(int runnerId, int quota) {
-                
-                //Swing NON è thread-safe, non si può chiamare pb0.setValue(...) da essi,
-                //SwingUtilies.invokeLater(...) permette di eseguire la determinata
-                //modifica della GUI sul thread di Swing (EDT) appena è possibile
-                
                 javax.swing.SwingUtilities.invokeLater(() -> {
                     if (runnerId == 0) {
                         pb0.setValue(quota);
@@ -196,17 +231,16 @@ public class Frame extends javax.swing.JFrame {
                 if (runnerId == 3) {
                     javax.swing.SwingUtilities.invokeLater(() -> {
                         btnAvvia.setEnabled(true);
-                        btnOpenSettings.setEnabled(true);
+                        cmbVelocita.setEnabled(true);
                     });
                 }
             }
         };
 
-        //thread ricreati, perché un thread non può ripartire due volte
-        thread0 = new Thread(new Runner(0, listener, config.msAcc, config.msCost, config.msDec), "runner0");
-        thread1 = new Thread(new Runner(1, listener, config.msAcc, config.msCost, config.msDec), "runner1");
-        thread2 = new Thread(new Runner(2, listener, config.msAcc, config.msCost, config.msDec), "runner2");
-        thread3 = new Thread(new Runner(3, listener, config.msAcc, config.msCost, config.msDec), "runner3");
+        thread0 = new Thread(new Runner(0, listener, msVelocita), "runner0");
+        thread1 = new Thread(new Runner(1, listener, msVelocita), "runner1");
+        thread2 = new Thread(new Runner(2, listener, msVelocita), "runner2");
+        thread3 = new Thread(new Runner(3, listener, msVelocita), "runner3");
 
         thread0.start();
         thread1.start();
@@ -214,27 +248,53 @@ public class Frame extends javax.swing.JFrame {
         thread3.start();
     }//GEN-LAST:event_btnAvviaActionPerformed
     
-    private void btnOpenSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenSettingsActionPerformed
+    private void btnPausaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPausaActionPerformed
+        Runner.pausa();
+
+        btnRiprendi.setEnabled(true);
+
+        btnPausa.setEnabled(false);
+        btnFerma.setEnabled(false);
         btnAvvia.setEnabled(false);
+        cmbVelocita.setEnabled(false);
+    }//GEN-LAST:event_btnPausaActionPerformed
 
-        Settings s = new Settings(config, new Settings.SettingsListener() {
-            @Override
-            public void onSettingsSaved(RunConfig newConfig) {
-                config = newConfig;
-            }
-        });
+    private void btnFermaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFermaActionPerformed
+        Runner.ferma();
 
-        //se l'utente chiude il form settings senza premere "Salva"
-        s.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosed(java.awt.event.WindowEvent e) {
-                btnAvvia.setEnabled(true);
-            }
-        });
+        if (thread0 != null) thread0.interrupt();
+        if (thread1 != null) thread1.interrupt();
+        if (thread2 != null) thread2.interrupt();
+        if (thread3 != null) thread3.interrupt();
 
-        s.setLocationRelativeTo(this);
-        s.setVisible(true);
-    }//GEN-LAST:event_btnOpenSettingsActionPerformed
+        Runner.resetGara();
+
+        pb0.setValue(0); pb1.setValue(0);
+        pb2.setValue(0); pb3.setValue(0);
+
+        muoviCorridore(pb0, lblCorridore0, 0);
+        muoviCorridore(pb1, lblCorridore1, 0);
+        muoviCorridore(pb2, lblCorridore2, 0);
+        muoviCorridore(pb3, lblCorridore3, 0);
+
+        btnAvvia.setEnabled(true);
+        cmbVelocita.setEnabled(true);
+
+        btnPausa.setEnabled(true);
+        btnFerma.setEnabled(true);
+        btnRiprendi.setEnabled(false);
+    }//GEN-LAST:event_btnFermaActionPerformed
+
+    private void btnRiprendiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRiprendiActionPerformed
+        Runner.riprendi();
+
+        btnRiprendi.setEnabled(false);
+
+        btnPausa.setEnabled(true);
+        btnFerma.setEnabled(true);
+        btnAvvia.setEnabled(false);
+        cmbVelocita.setEnabled(false);
+    }//GEN-LAST:event_btnRiprendiActionPerformed
 
     public static void main(String args[]) {
     /* Set the Nimbus look and feel */
@@ -260,7 +320,10 @@ public class Frame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAvvia;
-    private javax.swing.JButton btnOpenSettings;
+    private javax.swing.JButton btnFerma;
+    private javax.swing.JButton btnPausa;
+    private javax.swing.JButton btnRiprendi;
+    private javax.swing.JComboBox<String> cmbVelocita;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblCorridore0;
     private javax.swing.JLabel lblCorridore1;
