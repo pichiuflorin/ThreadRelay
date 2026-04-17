@@ -1,7 +1,7 @@
 package threadrelay;
 
 public class Runner implements Runnable {
-
+    
     public interface QuotaListener {
         void onQuotaChanged(int runnerId, int quota);
         void onFinished(int runnerId);
@@ -34,6 +34,7 @@ public class Runner implements Runnable {
                 while (turno != id && !fermato) {
                     staffetta.wait();
                 }
+                if (fermato) return;
             }
 
             for (int quota = 0; quota <= 99; quota++) {
@@ -44,6 +45,8 @@ public class Runner implements Runnable {
                     }
                     if (fermato) return;
                 }
+
+                if (fermato) return;
 
                 if (listener != null) listener.onQuotaChanged(id, quota);
 
@@ -61,7 +64,7 @@ public class Runner implements Runnable {
             if (listener != null) listener.onFinished(id);
 
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            return;
         }
     }
 

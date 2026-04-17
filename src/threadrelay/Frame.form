@@ -204,6 +204,7 @@
         <Component class="javax.swing.JButton" name="btnRiprendi">
           <Properties>
             <Property name="text" type="java.lang.String" value="Riprendi"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRiprendiActionPerformed"/>
@@ -217,6 +218,7 @@
         <Component class="javax.swing.JButton" name="btnPausa">
           <Properties>
             <Property name="text" type="java.lang.String" value="Pausa"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPausaActionPerformed"/>
@@ -230,6 +232,7 @@
         <Component class="javax.swing.JButton" name="btnFerma">
           <Properties>
             <Property name="text" type="java.lang.String" value="Ferma"/>
+            <Property name="enabled" type="boolean" value="false"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnFermaActionPerformed"/>

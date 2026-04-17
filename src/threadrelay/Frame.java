@@ -22,6 +22,7 @@ public class Frame extends javax.swing.JFrame {
         pb2.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
         pb3.setComponentOrientation(java.awt.ComponentOrientation.RIGHT_TO_LEFT);
         
+        //per farli partire come sono già collocati
         lblCorridore0.setSize(lblCorridore0.getPreferredSize());
         lblCorridore1.setSize(lblCorridore1.getPreferredSize());
         lblCorridore2.setSize(lblCorridore2.getPreferredSize());
@@ -140,9 +141,10 @@ public class Frame extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnAvvia);
-        btnAvvia.setBounds(350, 270, 76, 30);
+        btnAvvia.setBounds(350, 270, 72, 30);
 
         btnRiprendi.setText("Riprendi");
+        btnRiprendi.setEnabled(false);
         btnRiprendi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRiprendiActionPerformed(evt);
@@ -152,6 +154,7 @@ public class Frame extends javax.swing.JFrame {
         btnRiprendi.setBounds(260, 270, 90, 30);
 
         btnPausa.setText("Pausa");
+        btnPausa.setEnabled(false);
         btnPausa.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPausaActionPerformed(evt);
@@ -161,6 +164,7 @@ public class Frame extends javax.swing.JFrame {
         btnPausa.setBounds(190, 270, 70, 30);
 
         btnFerma.setText("Ferma");
+        btnFerma.setEnabled(false);
         btnFerma.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnFermaActionPerformed(evt);
@@ -252,23 +256,21 @@ public class Frame extends javax.swing.JFrame {
         Runner.pausa();
 
         btnRiprendi.setEnabled(true);
-
         btnPausa.setEnabled(false);
-        btnFerma.setEnabled(false);
+        btnFerma.setEnabled(true);
         btnAvvia.setEnabled(false);
         cmbVelocita.setEnabled(false);
     }//GEN-LAST:event_btnPausaActionPerformed
 
     private void btnFermaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFermaActionPerformed
-        Runner.ferma();
-
         if (thread0 != null) thread0.interrupt();
         if (thread1 != null) thread1.interrupt();
         if (thread2 != null) thread2.interrupt();
         if (thread3 != null) thread3.interrupt();
 
         Runner.resetGara();
-
+        Runner.ferma();
+        
         pb0.setValue(0); pb1.setValue(0);
         pb2.setValue(0); pb3.setValue(0);
 
@@ -276,13 +278,12 @@ public class Frame extends javax.swing.JFrame {
         muoviCorridore(pb1, lblCorridore1, 0);
         muoviCorridore(pb2, lblCorridore2, 0);
         muoviCorridore(pb3, lblCorridore3, 0);
-
+        
+        btnFerma.setEnabled(false);
         btnAvvia.setEnabled(true);
-        cmbVelocita.setEnabled(true);
-
-        btnPausa.setEnabled(true);
-        btnFerma.setEnabled(true);
+        btnPausa.setEnabled(false);
         btnRiprendi.setEnabled(false);
+        cmbVelocita.setEnabled(true);
     }//GEN-LAST:event_btnFermaActionPerformed
 
     private void btnRiprendiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRiprendiActionPerformed
